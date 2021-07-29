@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  php:
+    build: './.docker/php'
+    container_name: vending_machine_php
+    volumes:
+      - '.:/usr/src/app:cached'
+      - './var/log/php:/var/log'
+    expose:
+      - 9000
