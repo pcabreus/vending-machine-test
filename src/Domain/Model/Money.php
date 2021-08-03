@@ -18,9 +18,14 @@ class Money
         return new self($amount);
     }
 
-    public function subtract(int $amount): Money
+    public function diff(int $amount): Money
     {
         return new self($this->getValue() - $amount);
+    }
+
+    public function sum(int $amount): Money
+    {
+        return new self($this->getValue() + $amount);
     }
 
     public function getValue(): int

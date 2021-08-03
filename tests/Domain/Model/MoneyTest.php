@@ -2,53 +2,33 @@
 
 namespace App\Tests\Domain\Model;
 
-use App\Domain\Exceptions\InvalidMoneyException;
+use App\Domain\Exceptions\InvalidCoinException;
 use App\Domain\Model\Money;
 use PHPUnit\Framework\TestCase;
 
 class MoneyTest extends TestCase
 {
-    /**
-     * @dataProvider provider
-     */
-    public function testCreateByFloat($floatAmount, $intAmount, $stringAmount)
-    {
-        $money = Money::createByFloat($floatAmount);
-        self::assertEquals($intAmount, $money->getValue());
-        self::assertEquals($stringAmount, $money);
-    }
-
-    public function provider(): array
-    {
-        return [
-            [0.05, 5, '0.05'],
-            [0.10, 10, '0.10'],
-            [0.25, 25, '0.25'],
-            [1, 100, '1'],
-        ];
-    }
 
     public function testToFloat()
     {
-        $money = Money::createByFloat(0.05);
+        $money = Money::create(0.05);
+        self::assertEquals(5, $money->getValue());
         self::assertEquals(0.05, $money->toFloat());
     }
 
-    /**
-     * @dataProvider providerInvalidMoneyException
-     */
-    public function testInvalidMoneyException($floatAmount)
+    public function testDiff()
     {
-        $this->expectException(InvalidMoneyException::class);
-        Money::createByFloat($floatAmount);
+        $money = Money::create(0.05);
+        $money->diff(1);
+        self::assertEquals(4, $money->getValue());
+        self::assertEquals(0.04, $money->toFloat());
     }
 
-    public function providerInvalidMoneyException(): array
+    public function testSum()
     {
-        return [
-            [0],
-            [10],
-            [0.55],
-        ];
+        $money = Money::create(0.05);
+        $money->sum(1);
+        self::assertEquals(6, $money->getValue());
+        self::assertEquals(0.06, $money->toFloat());
     }
 }

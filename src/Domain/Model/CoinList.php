@@ -4,12 +4,12 @@ namespace App\Domain\Model;
 
 class CoinList
 {
-    private int $total;
+    private Money $total;
     private array $coins;
 
     private function __construct()
     {
-        $this->total = 0;
+        $this->total = Money::create(0);
         $this->coins = [];
     }
 
@@ -34,7 +34,7 @@ class CoinList
             $this->coins[$coin->getAmount()] = 0;
         }
         ++$this->coins[$coin->getAmount()];
-        $this->total += $coin->getAmount();
+        $this->total = $this->total->sum($coin->getAmount());
 
         return $this;
     }
@@ -43,13 +43,18 @@ class CoinList
     {
         $this->coins[$coin->getAmount()] = $amount;
 
-        $this->total += $coin->getAmount() * $amount;
+        $this->total = $this->total->sum($coin->getAmount() * $amount);
 
         return $this;
     }
 
-    public function subtract(Money $money): Money
+    public function diff(Money $money): Money
     {
-        return $money->subtract($this->total);
+        return $this->total->diff($money->getValue());
+    }
+
+    public function getTotal(): Money
+    {
+        return $this->total;
     }
 }

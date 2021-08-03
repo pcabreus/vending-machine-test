@@ -2,10 +2,11 @@
 
 namespace App\Domain\Model;
 
-use App\Domain\Exceptions\InvalidMoneyException;
+use App\Domain\Exceptions\InvalidCoinException;
 
 class Coin
 {
+    // As array of constant by simplicity
     private const ACCEPTED_AMOUNT = [0.05, 0.10, 0.25, 1.00];
     private Money $amount;
 
@@ -17,7 +18,7 @@ class Coin
     public static function create(float $floatAmount): self
     {
         if (!in_array($floatAmount, self::ACCEPTED_AMOUNT, true)) {
-            throw new InvalidMoneyException($floatAmount);
+            throw new InvalidCoinException($floatAmount);
         }
 
         return new self(Money::create($floatAmount));
