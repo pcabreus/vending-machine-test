@@ -2,36 +2,35 @@
 
 namespace App\Domain\Model;
 
-use App\Domain\Exceptions\InvalidMoneyException;
-
 class Money
 {
-    private const ACCEPTED_AMOUNT = [0.05, 0.10, 0.25, 1.00];
-    private int $amount;
+    private int $value;
 
-    private function __construct(int $amount)
+    private function __construct(int $value)
     {
-        $this->amount = $amount;
+        $this->value = $value;
     }
 
-    public static function createByFloat(float $floatAmount): Money
+    public static function create(float $floatAmount): Money
     {
-        if (!in_array($floatAmount, self::ACCEPTED_AMOUNT, true)) {
-            throw new InvalidMoneyException($floatAmount);
-        }
         $amount = (int)($floatAmount * 100);
 
         return new self($amount);
     }
 
-    public function getAmount(): int
+    public function subtract(int $amount): Money
     {
-        return $this->amount;
+        return new self($this->getValue() - $amount);
+    }
+
+    public function getValue(): int
+    {
+        return $this->value;
     }
 
     public function toFloat(): float
     {
-        return $this->amount / 100;
+        return $this->value / 100;
     }
 
     public function __toString(): string
