@@ -13,9 +13,8 @@ class CoinTest extends TestCase
      */
     public function testCreateByFloat($floatAmount, $intAmount, $stringAmount)
     {
-        $money = Coin::create($floatAmount);
-        self::assertEquals($intAmount, $money->getAmount());
-        self::assertEquals($stringAmount, $money);
+        $coin = Coin::create($floatAmount);
+        self::assertEquals($intAmount, $coin->getAmount());
     }
 
     public function provider(): array

@@ -8,7 +8,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class VendingMachineCommandTest extends KernelTestCase
 {
-    public function testExecute()
+    public function execute()
     {
         $kernel = static::createKernel();
         $application = new Application($kernel);

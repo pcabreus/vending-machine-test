@@ -30,20 +30,35 @@ class CoinList
 
     public function addCoin(Coin $coin): self
     {
-        if (!isset($this->coins[$coin->getAmount()])) {
-            $this->coins[$coin->getAmount()] = 0;
-        }
-        ++$this->coins[$coin->getAmount()];
-        $this->total = $this->total->sum($coin->getAmount());
+        $this->addCoinAmount($coin->getAmount(), 1);
 
         return $this;
     }
 
     public function addCoins(Coin $coin, int $amount): self
     {
-        $this->coins[$coin->getAmount()] = $amount;
+        $this->addCoinAmount($coin->getAmount(), $amount);
 
-        $this->total = $this->total->sum($coin->getAmount() * $amount);
+        return $this;
+    }
+
+
+    private function addCoinAmount(int $coinValue, int $amount): void
+    {
+        if (!isset($this->coins[$coinValue])) {
+            $this->coins[$coinValue] = 0;
+        }
+
+        $this->coins[$coinValue] += $amount;
+        $this->total = $this->total->sum($coinValue * $amount);
+    }
+
+
+    public function addCoinList(CoinList $coinList): self
+    {
+        foreach ($coinList->getCoins() as $value => $amount) {
+            $this->addCoinAmount($value, $amount);
+        }
 
         return $this;
     }

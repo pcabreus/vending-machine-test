@@ -2,6 +2,7 @@
 
 namespace App\Domain\Service;
 
+use App\Domain\Exceptions\InsufficientMoneyException;
 use App\Domain\Exceptions\NotFoundItemException;
 use App\Domain\Model\Coin;
 use App\Domain\Model\CoinList;
@@ -45,9 +46,15 @@ class VendingMachine implements ProcessorInterface
         }
 
         // check if user have all money
-        $rest = $amount->subtract($selectedItem->getPrice());
-//        if()
-
+        $rest = $amount->diff($selectedItem->getPrice());
+        if (0 > $rest) {
+            throw new InsufficientMoneyException(
+                $selectedItem->getSelector(),
+                $selectedItem->getPrice()->toFloat(),
+                $amount->getTotal()->toFloat()
+            );
+        }
+        $this->totalCoins->addCoinList($amount);
         // Calculate the change
 
         // Extract coins to return

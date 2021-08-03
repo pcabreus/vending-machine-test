@@ -19,16 +19,18 @@ class MoneyTest extends TestCase
     public function testDiff()
     {
         $money = Money::create(0.05);
-        $money->diff(1);
-        self::assertEquals(4, $money->getValue());
-        self::assertEquals(0.04, $money->toFloat());
+        $result = $money->diff(1);
+        self::assertEquals(5, $money->getValue());
+        self::assertEquals(4, $result->getValue());
+        self::assertEquals(0.04, $result->toFloat());
     }
 
     public function testSum()
     {
         $money = Money::create(0.05);
-        $money->sum(1);
-        self::assertEquals(6, $money->getValue());
-        self::assertEquals(0.06, $money->toFloat());
+        $result  = $money->sum(1);
+        self::assertEquals(5, $money->getValue());
+        self::assertEquals(6, $result->getValue());
+        self::assertEquals(0.06, $result->toFloat());
     }
 }

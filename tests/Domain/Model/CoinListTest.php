@@ -21,4 +21,18 @@ class CoinListTest extends TestCase
         $money = $coinList->diff(Money::create(0.01));
         self::assertEquals(0.09, $money->toFloat());
     }
+
+    public function testAddCoinList()
+    {
+        $coinList = CoinList::create();
+        self::assertEquals(0, $coinList->getTotal()->getValue());
+
+        $coinList->addCoinList(CoinList::create());
+        self::assertEquals(0, $coinList->getTotal()->getValue());
+
+        $coinListExtra = CoinList::create();
+        $coinListExtra->addCoins(Coin::create(0.05), 2);
+        $coinList->addCoinList($coinListExtra);
+        self::assertEquals(10, $coinList->getTotal()->getValue());
+    }
 }
