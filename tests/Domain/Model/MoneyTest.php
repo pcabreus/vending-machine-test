@@ -14,7 +14,7 @@ class MoneyTest extends TestCase
     public function testCreateByFloat($floatAmount, $intAmount, $stringAmount)
     {
         $money = Money::createByFloat($floatAmount);
-        self::assertEquals($intAmount, $money->getAmount());
+        self::assertEquals($intAmount, $money->getValue());
         self::assertEquals($stringAmount, $money);
     }
 

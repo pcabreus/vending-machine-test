@@ -4,7 +4,7 @@ namespace App\Domain\Exceptions;
 
 use Throwable;
 
-class InvalidMoneyException extends \InvalidArgumentException
+class InvalidMoneyException extends \DomainException
 {
     public function __construct(float $floatAmount, $code = 0, Throwable $previous = null)
     {
