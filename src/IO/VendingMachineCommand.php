@@ -2,6 +2,7 @@
 
 namespace App\IO;
 
+use App\Application\AddChange\AddChange;
 use App\Application\UpdateItem\UpdateItem;
 use App\Application\GetItem\GetItem;
 use App\Domain\Model\Coin;
@@ -9,6 +10,7 @@ use App\Domain\Model\CoinList;
 use App\Domain\Model\Item;
 use App\Domain\Model\Money;
 use App\Domain\Service\ProcessorInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -58,8 +60,12 @@ class VendingMachineCommand extends Command
         $helper = $this->getHelper('question');
         $question = new Question("<info>Place your order or type `help` to see all options:</info>\n");
 
-        $operatorQuestion = new Question(
+        $serviceItemQuestion = new Question(
             "<info>Hello Operator!. Update item by selector and count (e.g SODA, 20):</info>\n"
+        );
+
+        $serviceChangeQuestion = new Question(
+            "<info>Hello Operator!. Add coins (e.g 0.05, 1.00, 1.00):</info>\n"
         );
 
         while (true) {
@@ -88,18 +94,39 @@ class VendingMachineCommand extends Command
                 continue;
             }
 
-            if ('SERVICE' === $action) {
-                if (!$newItem = $helper->ask($input, $output, $operatorQuestion)) {
+            if ('SERVICE-ITEM' === $action) {
+                if (!$newItem = $helper->ask($input, $output, $serviceItemQuestion)) {
                     continue;
                 }
 
                 try {
                     [$selectorName, $count] = explode(',', $newItem);
                     $this->bus->dispatch(new UpdateItem(trim($selectorName), trim($count)));
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $writer->writeError(
                         new InvalidInputException(
                             sprintf('Invalid format to enter new items, given `%s`', $newItem)
+                        )
+                    );
+                    continue;
+                }
+
+                $writer->writeStatus();
+                continue;
+            }
+
+            if ('SERVICE-CHANGE' === $action) {
+                if (!$newItem = $helper->ask($input, $output, $serviceChangeQuestion)) {
+                    continue;
+                }
+
+                try {
+                    $coins = explode(',', $newItem);
+                    $this->bus->dispatch(new AddChange(array_map(static fn($coin) => trim($coin), $coins)));
+                } catch (Exception $exception) {
+                    $writer->writeError(
+                        new InvalidInputException(
+                            sprintf('Invalid set of changes, given `%s`', $newItem)
                         )
                     );
                     continue;
@@ -119,7 +146,9 @@ class VendingMachineCommand extends Command
 
                 try {
                     $envelope = $this->bus->dispatch(new GetItem($list, $selectedItem));
-                    $handledStamp = $envelope->last(HandledStamp::class);
+                    if(null === $handledStamp = $envelope->last(HandledStamp::class)) {
+                        throw new InvalidInputException('Invalid data enter');
+                    }
                     /** @var CoinList $change */
                     $change = $handledStamp->getResult();
                     $writer->writeResult($change, $selector);
@@ -127,7 +156,7 @@ class VendingMachineCommand extends Command
                     foreach ($e->getNestedExceptions() as $nestedException) {
                         $writer->writeError($nestedException);
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $writer->writeError($e);
                 }
                 continue;
