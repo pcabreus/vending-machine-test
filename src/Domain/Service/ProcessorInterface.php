@@ -11,6 +11,8 @@ interface ProcessorInterface
 
     public function findItem(string $selector): ?Item;
 
+    public function setItem(Item $item);
+
     public function getTotalItems(): array;
 
     public function setTotalItems(array $totalItems): self;

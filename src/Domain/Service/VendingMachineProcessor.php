@@ -41,6 +41,13 @@ class VendingMachineProcessor implements ProcessorInterface
         return $this->totalCoins->getChange($rest);
     }
 
+    public function setItem(Item $item): self
+    {
+        $this->totalItems[$item->getSelector()] = $item;
+
+        return $this;
+    }
+
     public function findItem(string $selector): ?Item
     {
         return $this->totalItems[$selector] ?? null;

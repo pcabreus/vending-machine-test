@@ -2,6 +2,7 @@
 
 namespace App\IO;
 
+use App\Application\UpdateItem\UpdateItem;
 use App\Application\GetItem\GetItem;
 use App\Domain\Model\Coin;
 use App\Domain\Model\CoinList;
@@ -59,6 +60,10 @@ class VendingMachineCommand extends Command
             "<info>Place your order or type `help` to see all options:</info>\n"
         );
 
+        $operatorQuestion = new Question(
+            "<info>Hello Operator. Update item by selector and count (e.g SODA, 20):</info>\n"
+        );
+
         while (true) {
             if (!$request = $helper->ask($input, $output, $question)) {
                 continue;
@@ -85,6 +90,26 @@ class VendingMachineCommand extends Command
                 continue;
             }
 
+            if ('SERVICE' === $action) {
+                if (!$newItem = $helper->ask($input, $output, $operatorQuestion)) {
+                    continue;
+                }
+
+                try {
+                    [$selectorName, $count] = explode(',', $newItem);
+                    $this->bus->dispatch(new UpdateItem(trim($selectorName), trim($count)));
+                } catch (\Exception $exception) {
+                    $writer->writeError(
+                        new InvalidInputException(
+                            sprintf('Invalid format to enter new items, given `%s`', $newItem)
+                        )
+                    );
+                    continue;
+                }
+
+                $writer->writeStatus();
+                continue;
+            }
 
             if (0 === strpos($action, 'GET-')) {
                 $selector = substr($action, 4);
@@ -110,12 +135,11 @@ class VendingMachineCommand extends Command
                 continue;
             }
 
-
             $writer->writeError(new InvalidInputException(sprintf('Invalid input: `%s`', $request)));
         }
     }
 
-    public function read(string $input): array
+    private function read(string $input): array
     {
         $parts = explode(',', $input);
         $action = trim(array_pop($parts));
@@ -127,7 +151,7 @@ class VendingMachineCommand extends Command
         return [$action, $list];
     }
 
-    public function installVendingMachineWithSomeProducts()
+    private function installVendingMachineWithSomeProducts(): void
     {
         // current product
         $soda = 'SODA';

@@ -8,10 +8,10 @@ class InsufficientMoneyException extends \DomainException
     {
         parent::__construct(
             sprintf(
-                'Insufficient money to get the item `%s` -> %d. provided `%d`',
+                'Insufficient money to get the item `%s` -> %s. provided `%s`',
                 $selector,
-                $price,
-                $amount
+                number_format($price, 2),
+                number_format($amount, 2)
             ),
             $code,
             $previous
