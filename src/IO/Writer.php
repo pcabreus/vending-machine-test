@@ -80,7 +80,7 @@ Example 3: Buy Water without exact change
         );
     }
 
-    public function writeError(\Exception $exception): void
+    public function writeError(\Throwable $exception): void
     {
         $this->output->writeln(
             [

@@ -56,12 +56,10 @@ class VendingMachineCommand extends Command
 
         //Listening to operation
         $helper = $this->getHelper('question');
-        $question = new Question(
-            "<info>Place your order or type `help` to see all options:</info>\n"
-        );
+        $question = new Question("<info>Place your order or type `help` to see all options:</info>\n");
 
         $operatorQuestion = new Question(
-            "<info>Hello Operator. Update item by selector and count (e.g SODA, 20):</info>\n"
+            "<info>Hello Operator!. Update item by selector and count (e.g SODA, 20):</info>\n"
         );
 
         while (true) {
