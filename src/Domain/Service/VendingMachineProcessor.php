@@ -22,7 +22,7 @@ class VendingMachineProcessor implements ProcessorInterface
     public function extractItem(Item $item, CoinList $entryCoins): CoinList
     {
         if (0 === $item->getCount()) {
-            throw new NotFoundItemException($item);
+            throw new NotFoundItemException($item->getSelector());
         }
 
         $rest = $entryCoins->diff($item->getPrice());
