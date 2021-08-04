@@ -7,7 +7,7 @@ use App\Domain\Model\Item;
 
 interface ProcessorInterface
 {
-    public function extractItem(Item $item, CoinList $entryCoins);
+    public function extractItem(Item $item, CoinList $entryCoins): CoinList;
 
     public function findItem(string $selector): ?Item;
 
