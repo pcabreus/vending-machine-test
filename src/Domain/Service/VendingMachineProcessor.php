@@ -4,10 +4,8 @@ namespace App\Domain\Service;
 
 use App\Domain\Exceptions\InsufficientMoneyException;
 use App\Domain\Exceptions\NotFoundItemException;
-use App\Domain\Model\Coin;
 use App\Domain\Model\CoinList;
 use App\Domain\Model\Item;
-use App\Domain\Model\Money;
 
 class VendingMachineProcessor implements ProcessorInterface
 {
@@ -21,42 +19,31 @@ class VendingMachineProcessor implements ProcessorInterface
         $this->totalCoins = CoinList::create();
     }
 
-    public function on()
+    public function extractItem(Item $item, CoinList $entryCoins): CoinList
     {
-        $this->totalItems = [
-            Item::SELECTOR_SODA => Item::createSoda(5, Money::create(1.50)),
-            Item::SELECTOR_JUICE => Item::createJuice(10, Money::create(1.00)),
-            Item::SELECTOR_WATER => Item::createWater(50, Money::create(0.65)),
-        ];
-
-        $this->totalCoins = CoinList::create();
-        foreach (['0.05' => 100, '0.10' => 50, '0.25' => 25, '1.00' => 10] as $coin => $count) {
-            $this->totalCoins->addCoins(Coin::create($coin), $count);
-        }
-    }
-
-    public function getItem(string $itemSelector, CoinList $entryCoins): CoinList
-    {
-        $selectedItem = $this->findItem($itemSelector);
-
-        if (0 === $selectedItem->getCount()) {
-            throw new NotFoundItemException($selectedItem);
+        if (0 === $item->getCount()) {
+            throw new NotFoundItemException($item);
         }
 
-        $rest = $entryCoins->diff($selectedItem->getPrice());
+        $rest = $entryCoins->diff($item->getPrice());
         if (0 > $rest->getValue()) {
             throw new InsufficientMoneyException(
-                $selectedItem->getSelector(),
-                $selectedItem->getPrice()->toFloat(),
+                $item->getSelector(),
+                $item->getPrice()->toFloat(),
                 $entryCoins->getTotal()->toFloat()
             );
         }
 
         $this->totalCoins->addCoinList($entryCoins);
 
-        $selectedItem->decrease();
+        $item->decrease();
 
         return $this->totalCoins->getChange($rest);
+    }
+
+    public function findItem(string $selector): ?Item
+    {
+        return $this->totalItems[$selector] ?? null;
     }
 
     public function getTotalItems(): array
@@ -81,11 +68,5 @@ class VendingMachineProcessor implements ProcessorInterface
         $this->totalCoins = $totalCoins;
 
         return $this;
-    }
-
-
-    private function findItem(string $selector): Item
-    {
-        return $this->totalItems[$selector];
     }
 }

@@ -3,12 +3,13 @@
 namespace App\Domain\Service;
 
 use App\Domain\Model\CoinList;
+use App\Domain\Model\Item;
 
 interface ProcessorInterface
 {
-    public function on();
+    public function extractItem(Item $item, CoinList $entryCoins);
 
-    public function getItem(string $itemSelector, CoinList $entryCoins);
+    public function findItem(string $selector): ?Item;
 
     public function getTotalItems(): array;
 

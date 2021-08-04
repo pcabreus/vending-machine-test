@@ -4,15 +4,6 @@ namespace App\Domain\Model;
 
 class Item
 {
-    public const SELECTOR_SODA = 'SODA';
-    public const SELECTOR_WATER = 'WATER';
-    public const SELECTOR_JUICE = 'JOICE';
-    public const SELECTORS = [
-        self::SELECTOR_SODA,
-        self::SELECTOR_WATER,
-        self::SELECTOR_JUICE,
-    ];
-
     private string $selector;
     private int $count;
     private Money $price;
@@ -24,24 +15,9 @@ class Item
         $this->price = $price;
     }
 
-    public static function createSoda(int $count, Money $price): self
+    public static function create(string $selector, int $count, Money $price): self
     {
-        return new static(self::SELECTOR_SODA, $count, $price);
-    }
-
-    public static function createWater(int $count, Money $price): self
-    {
-        return new static(self::SELECTOR_WATER, $count, $price);
-    }
-
-    public static function createJuice(int $count, Money $price): self
-    {
-        return new static(self::SELECTOR_JUICE, $count, $price);
-    }
-
-    public static function isSelectorValid(string $selector): bool
-    {
-        return in_array($selector, self::SELECTORS);
+        return new static($selector, $count, $price);
     }
 
     public function decrease(): void

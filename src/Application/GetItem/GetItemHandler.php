@@ -17,7 +17,7 @@ class GetItemHandler implements MessageHandlerInterface
 
     public function __invoke(GetItem $getItem): CoinList
     {
-        return $this->processor->getItem($getItem->getItem(), $getItem->getCoins());
+        return $this->processor->extractItem($getItem->getItem(), $getItem->getCoins());
     }
 
 }

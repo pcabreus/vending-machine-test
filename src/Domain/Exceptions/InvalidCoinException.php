@@ -2,11 +2,9 @@
 
 namespace App\Domain\Exceptions;
 
-use Throwable;
-
 class InvalidCoinException extends \DomainException
 {
-    public function __construct(float $floatAmount, $code = 0, Throwable $previous = null)
+    public function __construct(float $floatAmount, $code = 0, \Throwable $previous = null)
     {
         parent::__construct(
             sprintf(

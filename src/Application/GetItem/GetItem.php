@@ -3,13 +3,14 @@
 namespace App\Application\GetItem;
 
 use App\Domain\Model\CoinList;
+use App\Domain\Model\Item;
 
 final class GetItem
 {
     private CoinList $coins;
-    private string $item;
+    private Item $item;
 
-    public function __construct(CoinList $coins, string $item)
+    public function __construct(CoinList $coins, Item $item)
     {
         $this->coins = $coins;
         $this->item = $item;
@@ -20,22 +21,8 @@ final class GetItem
         return $this->coins;
     }
 
-    public function setCoins(CoinList $coins): self
-    {
-        $this->coins = $coins;
-
-        return $this;
-    }
-
-    public function getItem(): string
+    public function getItem(): Item
     {
         return $this->item;
-    }
-
-    public function setItem(string $item): self
-    {
-        $this->item = $item;
-
-        return $this;
     }
 }

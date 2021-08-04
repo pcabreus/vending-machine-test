@@ -6,6 +6,7 @@ use App\Application\GetItem\GetItem;
 use App\Domain\Model\Coin;
 use App\Domain\Model\CoinList;
 use App\Domain\Model\Item;
+use App\Domain\Model\Money;
 use App\Domain\Service\ProcessorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,7 +48,8 @@ class VendingMachineCommand extends Command
         $writer->withOutput($output);
 
         // On the vending machine. It came with some items and some money
-        $this->processor->on();
+
+        $this->installVendingMachineWithSomeProducts();
         $writer->writePresentation();
         $writer->writeStatus();
 
@@ -87,19 +89,21 @@ class VendingMachineCommand extends Command
             if (0 === strpos($action, 'GET-')) {
                 $selector = substr($action, 4);
 
-                if (!Item::isSelectorValid($selector)) {
+                if (null === $selectedItem = $this->processor->findItem($selector)) {
                     $this->writer->writeError(new InvalidInputException(sprintf('Invalid item name: `%s`', $selector)));
                     continue;
                 }
 
                 try {
-                    $envelope = $this->bus->dispatch(new GetItem($list, $selector));
+                    $envelope = $this->bus->dispatch(new GetItem($list, $selectedItem));
                     $handledStamp = $envelope->last(HandledStamp::class);
                     /** @var CoinList $change */
                     $change = $handledStamp->getResult();
                     $writer->writeResult($change, $selector);
                 } catch (HandlerFailedException $e) {
-                    $writer->writeError($e->getPrevious());
+                    foreach ($e->getNestedExceptions() as $nestedException) {
+                        $writer->writeError($nestedException);
+                    }
                 } catch (\Exception $e) {
                     $writer->writeError($e);
                 }
@@ -123,5 +127,24 @@ class VendingMachineCommand extends Command
         return [$action, $list];
     }
 
+    public function installVendingMachineWithSomeProducts()
+    {
+        // current product
+        $soda = 'SODA';
+        $water = 'WATER';
+        $juice = 'JUICE';
+        $totalItems = [
+            $soda => Item::create($soda, 5, Money::create(1.50)),
+            $water => Item::create($water, 10, Money::create(1.00)),
+            $juice => Item::create($juice, 50, Money::create(0.65)),
+        ];
+        $this->processor->setTotalItems($totalItems);
+
+        $totalCoins = CoinList::create();
+        foreach (['0.05' => 100, '0.10' => 50, '0.25' => 25, '1.00' => 10] as $coin => $count) {
+            $totalCoins->addCoins(Coin::create($coin), $count);
+        }
+        $this->processor->setTotalCoins($totalCoins);
+    }
 
 }
