@@ -2,6 +2,7 @@
 
 namespace App\Application\GetItem;
 
+use App\Domain\Model\CoinList;
 use App\Domain\Service\ProcessorInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -14,9 +15,9 @@ class GetItemHandler implements MessageHandlerInterface
         $this->processor = $processor;
     }
 
-    public function __invoke(GetItem $getItem)
+    public function __invoke(GetItem $getItem): CoinList
     {
-        $this->processor->getItem($getItem->getItem(), $getItem->getCoins());
+        return $this->processor->getItem($getItem->getItem(), $getItem->getCoins());
     }
 
 }

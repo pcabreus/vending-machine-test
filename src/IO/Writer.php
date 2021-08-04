@@ -3,6 +3,7 @@
 namespace App\IO;
 
 use App\Domain\Model\Coin;
+use App\Domain\Model\CoinList;
 use App\Domain\Service\ProcessorInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +34,7 @@ class Writer
         );
     }
 
-    public function writeState(): void
+    public function writeStatus(): void
     {
         $this->output->writeln('<info>#Items</info>');
         foreach ($this->vendingMachine->getTotalItems() as $totalItem) {
@@ -75,6 +76,39 @@ Example 3: Buy Water without exact change
 1, GET-WATER
 -> WATER, 0.25, 0.10',
                 '',
+            ]
+        );
+    }
+
+    public function writeError(\Exception $exception): void
+    {
+        $this->output->writeln(
+            [
+                '<error>There is an error in your request</error>',
+                sprintf('%s', $exception->getMessage()),
+            ]
+        );
+    }
+
+    public function writeResult(CoinList $change, string $item = null): void
+    {
+        $result = [];
+        if ($item) {
+            $result[] = $item;
+        }
+
+        if ($change->getTotal()->getValue() > 0) {
+            $array = [];
+            foreach ($change->getCoins() as $coin => $count) {
+                $array[] = array_fill(0, $count, number_format(Coin::MAP[$coin], 2));
+            }
+
+            $result = array_merge($result, ...$array);
+        }
+
+        $this->output->writeln(
+            [
+                sprintf('-> %s', implode(', ', $result)),
             ]
         );
     }

@@ -39,6 +39,16 @@ class Item
         return new static(self::SELECTOR_JUICE, $count, $price);
     }
 
+    public static function isSelectorValid(string $selector): bool
+    {
+        return in_array($selector, self::SELECTORS);
+    }
+
+    public function decrease(): void
+    {
+        --$this->count;
+    }
+
     public function getSelector(): string
     {
         return $this->selector;

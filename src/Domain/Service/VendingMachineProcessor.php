@@ -9,7 +9,7 @@ use App\Domain\Model\CoinList;
 use App\Domain\Model\Item;
 use App\Domain\Model\Money;
 
-class VendingMachine implements ProcessorInterface
+class VendingMachineProcessor implements ProcessorInterface
 {
     /** @var Item[] */
     private array $totalItems;
@@ -35,31 +35,28 @@ class VendingMachine implements ProcessorInterface
         }
     }
 
-    public function getItem(string $itemSelector, CoinList $amount): void
+    public function getItem(string $itemSelector, CoinList $entryCoins): CoinList
     {
-        //select the item
         $selectedItem = $this->findItem($itemSelector);
 
-        // check availability
         if (0 === $selectedItem->getCount()) {
             throw new NotFoundItemException($selectedItem);
         }
 
-        // check if user have all money
-        $rest = $amount->diff($selectedItem->getPrice());
-        if (0 > $rest) {
+        $rest = $entryCoins->diff($selectedItem->getPrice());
+        if (0 > $rest->getValue()) {
             throw new InsufficientMoneyException(
                 $selectedItem->getSelector(),
                 $selectedItem->getPrice()->toFloat(),
-                $amount->getTotal()->toFloat()
+                $entryCoins->getTotal()->toFloat()
             );
         }
-        $this->totalCoins->addCoinList($amount);
-        // Calculate the change
 
-        // Extract coins to return
+        $this->totalCoins->addCoinList($entryCoins);
 
-        // Rest the count of the item
+        $selectedItem->decrease();
+
+        return $this->totalCoins->getChange($rest);
     }
 
     public function getTotalItems(): array

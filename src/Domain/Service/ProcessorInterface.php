@@ -8,7 +8,7 @@ interface ProcessorInterface
 {
     public function on();
 
-    public function getItem(string $itemSelector, CoinList $amount);
+    public function getItem(string $itemSelector, CoinList $entryCoins);
 
     public function getTotalItems(): array;
 
