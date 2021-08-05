@@ -64,5 +64,4 @@ Add possibility to add new items:
 
   *  `SERVICE-ADD`. After set this command, set `COCO-COLA, 2, 0.75`.
   
-  
 

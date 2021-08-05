@@ -36,7 +36,7 @@ class Writer
 
     public function writeStatus(): void
     {
-        $this->output->writeln('<info>#Items</info>');
+        $this->output->writeln('<info>####### Items #######</info>');
         foreach ($this->vendingMachine->getTotalItems() as $totalItem) {
             $this->output->writeln(
                 sprintf('%s: %d - $%s', $totalItem->getSelector(), $totalItem->getCount(), $totalItem->getPrice())
@@ -44,7 +44,7 @@ class Writer
         }
         $this->output->writeln(
             [
-                '<info>#Change in coins</info>',
+                '<info>###### Change in coins #######</info>',
                 sprintf('$0.05: %d', $this->vendingMachine->getTotalCoins()->getCount(Coin::create(0.05))),
                 sprintf('$0.10: %d', $this->vendingMachine->getTotalCoins()->getCount(Coin::create(0.10))),
                 sprintf('$0.25: %d', $this->vendingMachine->getTotalCoins()->getCount(Coin::create(0.25))),
@@ -57,7 +57,7 @@ class Writer
     {
         $this->output->writeln(
             [
-                '<info>#Help</info>',
+                '<info>####### HELP ########</info>',
                 '<info>Expected command: List of coins separated by comma, and finally an action</info>',
                 '<info>Actions:</info>',
                 '<info>STATUS: Get the current status of the vending machine</info>',

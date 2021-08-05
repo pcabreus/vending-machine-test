@@ -90,7 +90,7 @@ class VendingMachineCommand extends Command
             [$action, $list] = $this->read($request);
 
             if ('RETURN-COIN' === $action) {
-                $writer->writeResult($list);
+                $writer->writeResult(CoinList::create($list));
                 continue;
             }
 
@@ -164,7 +164,7 @@ class VendingMachineCommand extends Command
     private function read(string $input): array
     {
         $parts = explode(',', $input);
-        $parts = array_merge(static fn($value) => trim($value), $parts);
+        $parts = array_map(static fn($value) => trim($value), $parts);
         $action = trim(array_pop($parts));
 
         return [$action, $parts];
