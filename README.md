@@ -19,7 +19,11 @@ Run the test
 
     ~/pcabreus-vm-test$ docker exec -it vending_machine_php php bin/phpunit
     ...
-    OK (28 tests, 45 assertions)
+    OK (29 tests, 45 assertions)
+
+**Note:** 100% of coverage in `Application` and `Domain`.
+
+Missing functional test for simplicity.
 
 ## Run the app:
 

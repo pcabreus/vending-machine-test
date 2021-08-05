@@ -2,7 +2,7 @@
 
 namespace App\Application\AddChange;
 
-use App\Domain\Model\Coin;
+use App\Domain\Model\CoinList;
 use App\Domain\Service\ProcessorInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -18,9 +18,9 @@ class AddChangeHandler implements MessageHandlerInterface
     public function __invoke(AddChange $addChange)
     {
         $coinList = $this->processor->getTotalCoins();
-        foreach ($addChange->getCoins() as $coin) {
-            $coinList->addCoin(Coin::create($coin));
-        }
+
+        $newChange = CoinList::create($addChange->getCoins());
+        $coinList->addCoinList($newChange);
 
         $this->processor->setTotalCoins($coinList);
     }
