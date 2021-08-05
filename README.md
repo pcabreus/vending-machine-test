@@ -1,6 +1,6 @@
 # Vending Machine Test
 
-# Installation and configuration
+## Installation and configuration
 
 Download the project:
 
@@ -21,7 +21,7 @@ Run the test
     ...
     OK (28 tests, 45 assertions)
 
-Run the app:
+## Run the app:
 
     ~/pcabreus-vm-test$ docker exec -it vending_machine_php symfony console app:run
     Vending Machine
@@ -52,6 +52,13 @@ There are 5 logical commands you can use:
  * `SERVICE-ITEM` allows to update the amount of items. After set this command, you will be able to enter the selector of the item and the quantity. e.g `SODA, 5`.
  * `SERVICE-CHANGE` allows to add the amount of coins. After set this command, you will be able to enter a list of coins. e.g `0.05, 1.00, 1.00`.
 
+**Note: I try to match the given example with the command entry. So the user in case of GET-ITEM and RETURN, the user has to set all the coins first and then the command.**
+
 ## TODO
 
-* Add new items
+Add possibility to add new items:
+
+  *  `SERVICE-ADD`. After set this command, set `COCO-COLA, 2, 0.75`.
+  
+  
+
