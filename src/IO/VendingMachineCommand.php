@@ -139,14 +139,9 @@ class VendingMachineCommand extends Command
             if (0 === strpos($action, 'GET-')) {
                 $selector = substr($action, 4);
 
-                if (null === $selectedItem = $this->processor->findItem($selector)) {
-                    $this->writer->writeError(new InvalidInputException(sprintf('Invalid item name: `%s`', $selector)));
-                    continue;
-                }
-
                 try {
-                    $envelope = $this->bus->dispatch(new GetItem($list, $selectedItem));
-                    if(null === $handledStamp = $envelope->last(HandledStamp::class)) {
+                    $envelope = $this->bus->dispatch(new GetItem($list, $selector));
+                    if (null === $handledStamp = $envelope->last(HandledStamp::class)) {
                         throw new InvalidInputException('Invalid data enter');
                     }
                     /** @var CoinList $change */
@@ -169,13 +164,10 @@ class VendingMachineCommand extends Command
     private function read(string $input): array
     {
         $parts = explode(',', $input);
+        $parts = array_merge(static fn($value) => trim($value), $parts);
         $action = trim(array_pop($parts));
-        $list = CoinList::create();
-        foreach ($parts as $part) {
-            $list->addCoin(Coin::create($part));
-        }
 
-        return [$action, $list];
+        return [$action, $parts];
     }
 
     private function installVendingMachineWithSomeProducts(): void

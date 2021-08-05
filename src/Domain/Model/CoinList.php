@@ -15,9 +15,15 @@ class CoinList
         $this->coins = [];
     }
 
-    public static function create(): self
+    public static function create(array $csvCoins = []): self
     {
-        return new static();
+        $coinList = new static();
+
+        foreach ($csvCoins as $floatCoins) {
+            $coinList->addCoin(Coin::create($floatCoins));
+        }
+
+        return $coinList;
     }
 
     public function getCoins(): array

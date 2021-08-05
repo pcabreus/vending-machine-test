@@ -2,6 +2,7 @@
 
 namespace App\Application\GetItem;
 
+use App\Domain\Exceptions\NotFoundItemException;
 use App\Domain\Model\CoinList;
 use App\Domain\Service\ProcessorInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -17,7 +18,13 @@ class GetItemHandler implements MessageHandlerInterface
 
     public function __invoke(GetItem $getItem): CoinList
     {
-        return $this->processor->extractItem($getItem->getItem(), $getItem->getCoins());
+        if (null === $selectedItem = $this->processor->findItem($getItem->getSelector())) {
+            throw new NotFoundItemException(sprintf('Invalid item name: `%s`', $getItem->getSelector()));
+        }
+
+        $coins = CoinList::create($getItem->getCoins());
+
+        return $this->processor->extractItem($selectedItem, $coins);
     }
 
 }

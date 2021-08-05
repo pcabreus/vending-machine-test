@@ -2,27 +2,24 @@
 
 namespace App\Application\GetItem;
 
-use App\Domain\Model\CoinList;
-use App\Domain\Model\Item;
-
 final class GetItem
 {
-    private CoinList $coins;
-    private Item $item;
+    private array $coins;
+    private string $selector;
 
-    public function __construct(CoinList $coins, Item $item)
+    public function __construct(array $coins, string $selector)
     {
         $this->coins = $coins;
-        $this->item = $item;
+        $this->selector = $selector;
     }
 
-    public function getCoins(): CoinList
+    public function getCoins(): array
     {
         return $this->coins;
     }
 
-    public function getItem(): Item
+    public function getSelector(): string
     {
-        return $this->item;
+        return $this->selector;
     }
 }
